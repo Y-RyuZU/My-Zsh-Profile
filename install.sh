@@ -1,6 +1,67 @@
 #!/bin/bash
 
-# 既存のインストール部分
+# Zshがインストールされているか確認し、なければインストール
+if ! command -v zsh &> /dev/null; then
+  echo "Zshがインストールされていません。インストールを開始します..."
+
+  # OS種別に応じたインストールコマンドを実行
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if command -v apt &> /dev/null; then
+      echo "Ubuntu/Debian系OSを検出しました。Zshをインストールします..."
+      sudo apt update && sudo apt install -y zsh
+    elif command -v dnf &> /dev/null; then
+      echo "Fedora系OSを検出しました。Zshをインストールします..."
+      sudo dnf install -y zsh
+    elif command -v yum &> /dev/null; then
+      echo "RHEL/CentOS系OSを検出しました。Zshをインストールします..."
+      sudo yum install -y zsh
+    elif command -v pacman &> /dev/null; then
+      echo "Arch Linux系OSを検出しました。Zshをインストールします..."
+      sudo pacman -S --noconfirm zsh
+    else
+      echo "サポートされていないLinuxディストリビューションです。"
+      echo "手動でZshをインストールしてから再実行してください。"
+      exit 1
+    fi
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    if command -v brew &> /dev/null; then
+      echo "macOSを検出しました。Homebrewを使用してZshをインストールします..."
+      brew install zsh
+    else
+      echo "Homebrewがインストールされていません。"
+      echo "Homebrewをインストールしますか？ (y/n)"
+      read -r install_homebrew
+      if [[ "$install_homebrew" == "y" ]]; then
+        echo "Homebrewをインストールしています..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        if command -v brew &> /dev/null; then
+          echo "Homebrewをインストールしました。Zshをインストールしています..."
+          brew install zsh
+        else
+          echo "Homebrewのインストールに失敗しました。"
+          echo "https://brew.sh/ からHomebrewをインストール後、再実行してください。"
+          exit 1
+        fi
+      else
+        echo "インストールをスキップしました。"
+        echo "手動でZshをインストールしてから再実行してください。"
+        exit 1
+      fi
+    fi
+  else
+    echo "サポートされていないOSです。手動でZshをインストールしてから再実行してください。"
+    exit 1
+  fi
+
+  # インストール結果を確認
+  if ! command -v zsh &> /dev/null; then
+    echo "Zshのインストールに失敗しました。手動でインストールしてから再実行してください。"
+    exit 1
+  else
+    echo "Zshが正常にインストールされました。"
+  fi
+fi
+
 # oh-my-zshがインストールされていなければインストール
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "oh-my-zshをインストールします..."
@@ -46,6 +107,42 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     fc-cache -f -v
     echo "フォントをインストールしました。ターミナルの設定でMesloLGS NFフォントを選択してください。"
   fi
+fi
+
+# デフォルトシェルをZshに設定
+if [ "$SHELL" != "$(which zsh)" ]; then
+  echo "デフォルトシェルをZshに設定します..."
+
+  # Zshのパスを取得
+  ZSH_PATH=$(which zsh)
+
+  # /etc/shellsにZshのパスが登録されているか確認し、なければ追加を試みる
+  if [[ -f /etc/shells ]]; then
+    if ! grep -q "$ZSH_PATH" /etc/shells; then
+      echo "Zshのパス($ZSH_PATH)を/etc/shellsに追加します..."
+      echo "$ZSH_PATH" | sudo tee -a /etc/shells > /dev/null || {
+        echo "警告: /etc/shellsにZshのパスを追加できませんでした。"
+        echo "root権限で以下のコマンドを実行してください:"
+        echo "echo $ZSH_PATH >> /etc/shells"
+      }
+    fi
+  fi
+
+  # デフォルトシェルを変更
+  if command -v chsh &> /dev/null; then
+    echo "シェルを$ZSH_PATHに変更します..."
+    echo "シェルを変更するにはパスワードが必要かもしれません。"
+    chsh -s "$ZSH_PATH" || {
+      echo "chshコマンドでエラーが発生しました。"
+      echo "手動で以下のコマンドを実行してください："
+      echo "chsh -s $ZSH_PATH"
+    }
+  else
+    echo "chshコマンドが見つかりません。手動でシェルを変更するには："
+    echo "chsh -s $ZSH_PATH"
+  fi
+else
+  echo "既にZshがデフォルトシェルとして設定されています。"
 fi
 
 echo "インストール完了！新しいシェルを開始するか、source ~/.zshrcを実行してください。"
