@@ -7,7 +7,6 @@ plugins=(
   node
   zsh-autosuggestions
   zsh-syntax-highlighting
-  zsh-abbr
   history-substring-search
   sudo
   web-search
