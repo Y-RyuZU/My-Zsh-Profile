@@ -1,16 +1,15 @@
+# Powerlevel10k の即時初期化を有効にする
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # oh-my-zsh設定
 export ZSH="$HOME/.oh-my-zsh"
 
 # テーマ設定
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Powerlevel10k の即時初期化を有効にする
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # abbr関連の出力を抑制
-
 export ABBR_QUIET=1
 
 # シンボリックリンクのパスを取得（より堅牢な方法）
@@ -27,9 +26,6 @@ fi
 
 # oh-my-zshを読み込む
 source $ZSH/oh-my-zsh.sh
-
-# abbrを個別に読み込む
-source $ZSH_CUSTOM/plugins/abbr/abbr.plugin.zsh
 
 # 追加の設定ファイルを読み込む（存在する場合のみ）
 [ -f "$CURRENT_DIR/aliases.zsh" ] && source $CURRENT_DIR/aliases.zsh
