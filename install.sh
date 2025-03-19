@@ -95,6 +95,18 @@ if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 fi
 
+# zsh-abbrプラグインのインストール
+if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-abbr" ]; then
+  echo "zsh-abbr プラグインをインストールします..."
+  git clone https://github.com/olets/zsh-abbr ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-abbr
+fi
+
+# history-substring-search（必要な場合）
+if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/history-substring-search" ]; then
+  echo "history-substring-search プラグインをインストールします..."
+  git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/history-substring-search
+fi
+
 # Linux向け Nerd Fonts のインストール（Ubuntu/Debian系）
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   if [ ! -d "$HOME/.local/share/fonts/NerdFonts" ]; then

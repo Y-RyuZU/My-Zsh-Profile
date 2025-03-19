@@ -9,14 +9,24 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# シンボリックリンクのパスを取得（より堅牢な方法）
+if command -v readlink >/dev/null 2>&1; then
+  CURRENT_DIR=$(dirname $(readlink -f $HOME/.zshrc 2>/dev/null || readlink $HOME/.zshrc))
+else
+  CURRENT_DIR=$(cd $(dirname $HOME/.zshrc) && pwd)
+fi
+
+# プラグインの設定
+if [ -f "$CURRENT_DIR/plugins.zsh" ]; then
+  source $CURRENT_DIR/plugins.zsh
+fi
+
 # oh-my-zshを読み込む
 source $ZSH/oh-my-zsh.sh
 
-# 追加の設定ファイルを読み込む
-CURRENT_DIR=$(dirname $(readlink $HOME/.zshrc))
-source $CURRENT_DIR/aliases.zsh
-source $CURRENT_DIR/environment.zsh
-source $CURRENT_DIR/plugins.zsh
+# 追加の設定ファイルを読み込む（存在する場合のみ）
+[ -f "$CURRENT_DIR/aliases.zsh" ] && source $CURRENT_DIR/aliases.zsh
+[ -f "$CURRENT_DIR/environment.zsh" ] && source $CURRENT_DIR/environment.zsh
 
 # カスタムディレクトリの設定
 if [ -d "$CURRENT_DIR/custom" ]; then
@@ -26,4 +36,9 @@ if [ -d "$CURRENT_DIR/custom" ]; then
 fi
 
 # Powerlevel10kの設定ファイルを読み込む
-[[ ! -f $CURRENT_DIR/p10k.zsh ]] || source $CURRENT_DIR/p10k.zsh
+# まずリポジトリ内のp10k.zshを試し、なければホームディレクトリの設定を使用
+if [ -f "$CURRENT_DIR/p10k.zsh" ]; then
+  source $CURRENT_DIR/p10k.zsh
+elif [ -f "$HOME/.p10k.zsh" ]; then
+  source $HOME/.p10k.zsh
+fi
