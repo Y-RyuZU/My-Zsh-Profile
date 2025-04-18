@@ -1,23 +1,37 @@
 #!/bin/bash
 
+#!/bin/bash
+
+# sudoコマンドが必要かどうかを判断する関数
+need_sudo() {
+  if [ "$(id -u)" -eq 0 ]; then
+    # root ユーザーの場合は sudo 不要
+    echo ""
+  else
+    # 一般ユーザーの場合は sudo が必要
+    echo "sudo"
+  fi
+}
+
 # Zshがインストールされているか確認し、なければインストール
 if ! command -v zsh &> /dev/null; then
   echo "Zshがインストールされていません。インストールを開始します..."
 
   # OS種別に応じたインストールコマンドを実行
   if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    SUDO=$(need_sudo)
     if command -v apt &> /dev/null; then
       echo "Ubuntu/Debian系OSを検出しました。Zshをインストールします..."
-      sudo apt update && sudo apt install -y zsh
+      $SUDO apt update && $SUDO apt install -y zsh
     elif command -v dnf &> /dev/null; then
       echo "Fedora系OSを検出しました。Zshをインストールします..."
-      sudo dnf install -y zsh
+      $SUDO dnf install -y zsh
     elif command -v yum &> /dev/null; then
       echo "RHEL/CentOS系OSを検出しました。Zshをインストールします..."
-      sudo yum install -y zsh
+      $SUDO yum install -y zsh
     elif command -v pacman &> /dev/null; then
       echo "Arch Linux系OSを検出しました。Zshをインストールします..."
-      sudo pacman -S --noconfirm zsh
+      $SUDO pacman -S --noconfirm zsh
     else
       echo "サポートされていないLinuxディストリビューションです。"
       echo "手動でZshをインストールしてから再実行してください。"
@@ -62,6 +76,7 @@ if ! command -v zsh &> /dev/null; then
   fi
 fi
 
+# 以下の部分は変更なし
 # oh-my-zshがインストールされていなければインストール
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "oh-my-zshをインストールします..."
@@ -92,7 +107,7 @@ fi
 # Powerlevel10k テーマのインストール
 if [ ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]; then
   echo "Powerlevel10k テーマをインストールします..."
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
 fi
 
 # zsh-abbrプラグインのインストール
@@ -112,12 +127,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   if [ ! -d "$HOME/.local/share/fonts/NerdFonts" ]; then
     echo "Meslo Nerd Fontをインストールしています..."
     mkdir -p "$HOME/.local/share/fonts/NerdFonts"
-    curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf -o "$HOME/.local/share/fonts/NerdFonts/MesloLGS NF Regular.ttf"
-    curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf -o "$HOME/.local/share/fonts/NerdFonts/MesloLGS NF Bold.ttf"
-    curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf -o "$HOME/.local/share/fonts/NerdFonts/MesloLGS NF Italic.ttf"
-    curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf -o "$HOME/.local/share/fonts/NerdFonts/MesloLGS NF Bold Italic.ttf"
-    fc-cache -f -v
-    echo "フォントをインストールしました。ターミナルの設定でMesloLGS NFフォントを選択してください。"
+    curl -L https://github.com/romkatv/powerlevel10k
   fi
 fi
 
@@ -156,6 +166,25 @@ if [ "$SHELL" != "$(which zsh)" ]; then
 else
   echo "既にZshがデフォルトシェルとして設定されています。"
 fi
+
+
+# ~/.zsh/.zshrcから~/.zshrcへのシンボリックリンクを作成
+if [ -f "$HOME/.zsh/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+  echo "~/.zsh/.zshrcから~/.zshrcへのシンボリックリンクを作成します..."
+  # 既存の.zshrcがある場合はバックアップを作成
+  if [ -f "$HOME/.zshrc" ]; then
+    mv "$HOME/.zshrc" "$HOME/.zshrc.backup.$(date +%Y%m%d%H%M%S)"
+  fi
+  ln -sf "$HOME/.zsh/.zshrc" "$HOME/.zshrc"
+  echo "シンボリックリンクが正常に作成されました。"
+else
+  if [ -L "$HOME/.zshrc" ]; then
+    echo "~/.zshrcへのシンボリックリンクは既に存在します。"
+  else
+    echo "~/.zsh/.zshrcが見つかりません。シンボリックリンクを作成できません。"
+  fi
+fi
+
 
 echo "インストール完了！新しいシェルを開始するか、source ~/.zshrcを実行してください。"
 echo "Powerlevel10kの初期設定は最初のシェル起動時に行われます。"

@@ -13,9 +13,7 @@ git clone git@github.com:Y-RyuZU/My-Zsh-Profile.git ~/.zsh
 
 2. Run the installation script
 ```shell script
-cd ~/.zsh
-chmod +x install.sh
-./install.sh
+cd ~/.zsh && chmod +x install.sh && ./install.sh
 ```
 
 ## Features
