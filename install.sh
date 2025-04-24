@@ -91,7 +91,7 @@ fi
 
 # シンボリックリンクを作成
 echo "シンボリックリンクを設定します..."
-ln -sf "$(pwd)/zshrc" "$HOME/.zshrc"
+ln -sf "$HOME/.zsh/.zshrc" "$HOME/.zshrc"
 
 # カスタムディレクトリがなければ作成
 if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
@@ -165,24 +165,6 @@ if [ "$SHELL" != "$(which zsh)" ]; then
   fi
 else
   echo "既にZshがデフォルトシェルとして設定されています。"
-fi
-
-
-# ~/.zsh/.zshrcから~/.zshrcへのシンボリックリンクを作成
-if [ -f "$HOME/.zsh/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
-  echo "~/.zsh/.zshrcから~/.zshrcへのシンボリックリンクを作成します..."
-  # 既存の.zshrcがある場合はバックアップを作成
-  if [ -f "$HOME/.zshrc" ]; then
-    mv "$HOME/.zshrc" "$HOME/.zshrc.backup.$(date +%Y%m%d%H%M%S)"
-  fi
-  ln -sf "$HOME/.zsh/.zshrc" "$HOME/.zshrc"
-  echo "シンボリックリンクが正常に作成されました。"
-else
-  if [ -L "$HOME/.zshrc" ]; then
-    echo "~/.zshrcへのシンボリックリンクは既に存在します。"
-  else
-    echo "~/.zsh/.zshrcが見つかりません。シンボリックリンクを作成できません。"
-  fi
 fi
 
 
