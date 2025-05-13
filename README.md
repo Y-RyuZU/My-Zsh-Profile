@@ -8,7 +8,7 @@ Follow these steps to install the Zsh configuration:
 
 1. Clone the repository
 ```shell script
-git clone git@github.com:Y-RyuZU/My-Zsh-Profile.git ~/.zsh
+git clone https://github.com/Y-RyuZU/My-Zsh-Profile.git ~/.zsh
 ```
 
 2. Run the installation script
