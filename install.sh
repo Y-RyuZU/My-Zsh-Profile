@@ -113,7 +113,7 @@ fi
 # zsh-abbrプラグインのインストール
 if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-abbr" ]; then
   echo "zsh-abbr プラグインをインストールします..."
-  git clone https://github.com/olets/zsh-abbr ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-abbr
+  git clone --recurse-submodules https://github.com/olets/zsh-abbr ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-abbr
 fi
 
 # history-substring-search（必要な場合）
@@ -127,7 +127,11 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   if [ ! -d "$HOME/.local/share/fonts/NerdFonts" ]; then
     echo "Meslo Nerd Fontをインストールしています..."
     mkdir -p "$HOME/.local/share/fonts/NerdFonts"
-    curl -L https://github.com/romkatv/powerlevel10k
+    curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf -o "$HOME/.local/share/fonts/NerdFonts/MesloLGS NF Regular.ttf"
+    curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf -o "$HOME/.local/share/fonts/NerdFonts/MesloLGS NF Bold.ttf"
+    curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf -o "$HOME/.local/share/fonts/NerdFonts/MesloLGS NF Italic.ttf"
+    curl -L https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf -o "$HOME/.local/share/fonts/NerdFonts/MesloLGS NF Bold Italic.ttf"
+    fc-cache -fv
   fi
 fi
 
