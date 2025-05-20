@@ -145,8 +145,9 @@ if [ "$SHELL" != "$(which zsh)" ]; then
   # /etc/shellsにZshのパスが登録されているか確認し、なければ追加を試みる
   if [[ -f /etc/shells ]]; then
     if ! grep -q "$ZSH_PATH" /etc/shells; then
+      SUDO=$(need_sudo)
       echo "Zshのパス($ZSH_PATH)を/etc/shellsに追加します..."
-      echo "$ZSH_PATH" | sudo tee -a /etc/shells > /dev/null || {
+      echo "$ZSH_PATH" | $SUDO tee -a /etc/shells > /dev/null || {
         echo "警告: /etc/shellsにZshのパスを追加できませんでした。"
         echo "root権限で以下のコマンドを実行してください:"
         echo "echo $ZSH_PATH >> /etc/shells"
